@@ -1,0 +1,33 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+D:\flutter\n3bd\backend\Controllers\AccountController.cs(2,14): error CS0234: The type or namespace name 'IdentityModel' does not exist in the namespace 'System' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Controllers\AccountController.cs(9,17): error CS0234: The type or namespace name 'EntityFrameworkCore' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Controllers\AccountController.cs(11,17): error CS0234: The type or namespace name 'IdentityModel' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Data\ApplicationDbContext.cs(1,17): error CS0234: The type or namespace name 'EntityFrameworkCore' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Program.cs(2,43): error CS0234: The type or namespace name 'JwtBearer' does not exist in the namespace 'Microsoft.AspNetCore.Authentication' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Program.cs(3,17): error CS0234: The type or namespace name 'EntityFrameworkCore' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Program.cs(4,17): error CS0234: The type or namespace name 'IdentityModel' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Data\ApplicationDbContext.cs(6,41): error CS0246: The type or namespace name 'DbContext' could not be found (are you missing a using directive or an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Data\ApplicationDbContext.cs(8,37): error CS0246: The type or namespace name 'DbContextOptions<>' could not be found (are you missing a using directive or an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Data\ApplicationDbContext.cs(13,16): error CS0246: The type or namespace name 'DbSet<>' could not be found (are you missing a using directive or an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Data\ApplicationDbContext.cs(14,16): error CS0246: The type or namespace name 'DbSet<>' could not be found (are you missing a using directive or an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Data\ApplicationDbContext.cs(15,16): error CS0246: The type or namespace name 'DbSet<>' could not be found (are you missing a using directive or an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+
+Build FAILED.
+
+D:\flutter\n3bd\backend\Controllers\AccountController.cs(2,14): error CS0234: The type or namespace name 'IdentityModel' does not exist in the namespace 'System' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Controllers\AccountController.cs(9,17): error CS0234: The type or namespace name 'EntityFrameworkCore' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Controllers\AccountController.cs(11,17): error CS0234: The type or namespace name 'IdentityModel' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Data\ApplicationDbContext.cs(1,17): error CS0234: The type or namespace name 'EntityFrameworkCore' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Program.cs(2,43): error CS0234: The type or namespace name 'JwtBearer' does not exist in the namespace 'Microsoft.AspNetCore.Authentication' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Program.cs(3,17): error CS0234: The type or namespace name 'EntityFrameworkCore' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Program.cs(4,17): error CS0234: The type or namespace name 'IdentityModel' does not exist in the namespace 'Microsoft' (are you missing an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Data\ApplicationDbContext.cs(6,41): error CS0246: The type or namespace name 'DbContext' could not be found (are you missing a using directive or an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Data\ApplicationDbContext.cs(8,37): error CS0246: The type or namespace name 'DbContextOptions<>' could not be found (are you missing a using directive or an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Data\ApplicationDbContext.cs(13,16): error CS0246: The type or namespace name 'DbSet<>' could not be found (are you missing a using directive or an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Data\ApplicationDbContext.cs(14,16): error CS0246: The type or namespace name 'DbSet<>' could not be found (are you missing a using directive or an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+D:\flutter\n3bd\backend\Data\ApplicationDbContext.cs(15,16): error CS0246: The type or namespace name 'DbSet<>' could not be found (are you missing a using directive or an assembly reference?) [D:\flutter\n3bd\backend\Sayartii.Api.csproj]
+    0 Warning(s)
+    12 Error(s)
+
+Time Elapsed 00:00:01.91

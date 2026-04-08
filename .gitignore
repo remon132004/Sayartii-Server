@@ -1,0 +1,29 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+
+# SQL Server / SQLite
+*.db
+*.mdf
+*.ldf
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# Large Files (AI Models) - CRITICAL
+*.pkl
+*.h5
+*.onnx
+flask_backend/saved_models/
+**/saved_models/*
+
+# OS/Other
+desktop.ini
+SayartiiServer.zip
+vockey.pem
+.git/

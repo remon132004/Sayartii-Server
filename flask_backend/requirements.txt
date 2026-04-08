@@ -1,0 +1,7 @@
+Flask==3.0.3
+scikit-learn==1.4.2
+pandas==2.2.2
+numpy==1.26.4
+openai==1.23.2
+python-dotenv==1.0.1
+# tensorflow==2.16.1 # Uncomment when training GANs with CTGAN or tf.keras
