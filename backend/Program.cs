@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Sayartii.Api.Data;
 using Sayartii.Api.Models;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +14,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add Identity
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+// Add Identity with relaxed password rules
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false; // هذا السطر يحل المشكلة اللي ظهرت
+    options.Password.RequiredLength = 6;
+})
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
@@ -60,8 +69,20 @@ using (var scope = app.Services.CreateScope())
         try
         {
             logger.LogInformation("Attempting to initialize database...");
-            db.Database.EnsureCreated();
-            logger.LogInformation("Database initialization successful.");
+            if (!db.Database.CanConnect())
+            {
+                Console.WriteLine("Cannot connect to database.");
+            }
+            
+            // Ensure tables are created (even if DB exists)
+            var databaseCreator = db.Database.GetService<IRelationalDatabaseCreator>();
+            try {
+                databaseCreator.CreateTables();
+            } catch (Exception) {
+                // Tables might already exist, ignore
+            }
+            
+            Console.WriteLine("Database initialization finished.");
             break;
         }
         catch (Exception ex)

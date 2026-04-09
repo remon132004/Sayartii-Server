@@ -52,5 +52,5 @@ def predict():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    # Start the Flask API on port 5000
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Start the Flask API on port 7860 for Hugging Face
+    app.run(host='0.0.0.0', port=7860, debug=True)
