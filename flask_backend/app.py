@@ -51,6 +51,26 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/dtc_code/<dtc_code>', methods=['GET'])
+def get_dtc_code(dtc_code):
+    """
+    Endpoint: GET /dtc_code/<dtc_code>
+    Returns structured JSON description for a DTC code.
+    """
+    try:
+        if not dtc_code:
+            return jsonify({"error": "No DTC Code provided"}), 400
+
+        # Generate description using OpenAI
+        result = generate_dtc_description(dtc_code)
+        
+        if "error" in result:
+            return jsonify(result), 500
+
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     # Start the Flask API on port 7860 for Hugging Face
     app.run(host='0.0.0.0', port=7860, debug=True)
