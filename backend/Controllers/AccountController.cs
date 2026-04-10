@@ -33,7 +33,8 @@ namespace Sayartii.Api.Controllers
         [HttpPost("register")]//api/account/register
         public async Task<IActionResult> Registration([FromBody] RegisterUserDto userDto)
         {
-            var Users = db.Users.FirstOrDefault(a => a.Email == userDto.Email);
+            try {
+                var Users = db.Users.FirstOrDefault(a => a.Email == userDto.Email);
 
             if (Users == null)
             {
@@ -58,6 +59,11 @@ namespace Sayartii.Api.Controllers
             {
                 ModelState.AddModelError("Email", "the Email is already taken");
                 return BadRequest(ModelState);
+            }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message, inner = ex.InnerException?.Message, stackTrace = ex.StackTrace });
             }
         }
 
