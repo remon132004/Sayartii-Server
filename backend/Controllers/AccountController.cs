@@ -33,33 +33,46 @@ namespace Sayartii.Api.Controllers
         [HttpPost("register")]//api/account/register
         public async Task<IActionResult> Registration([FromBody] RegisterUserDto userDto)
         {
-            try {
-                var Users = db.Users.FirstOrDefault(a => a.Email == userDto.Email);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            if (Users == null)
-            {
-                if (ModelState.IsValid)
+                // Use async Identity lookup to avoid sync LINQ on pooled connections
+                var existingUser = await usermanger.FindByEmailAsync(userDto.Email);
+                if (existingUser != null)
                 {
-                    //save
-                    ApplicationUser user = new ApplicationUser();
-                    user.Name = userDto.Name;
-                    user.UserName = userDto.Email;
-                    user.Email = userDto.Email;
-                    
-                    IdentityResult result = await usermanger.CreateAsync(user, userDto.Password);
-                    if (result.Succeeded)
-                    {
-                        return Ok("Account Add Success");
-                    }
-                    return BadRequest(result.Errors.FirstOrDefault());
+                    ModelState.AddModelError("Email", "the Email is already taken");
+                    return BadRequest(ModelState);
                 }
-                return BadRequest(ModelState);
+
+                ApplicationUser user = new ApplicationUser();
+                user.Name = userDto.Name;
+                user.UserName = userDto.Email;
+                user.Email = userDto.Email;
+
+                IdentityResult result = await usermanger.CreateAsync(user, userDto.Password);
+                if (result.Succeeded)
+                    return Ok("Account Add Success");
+
+                // Check if failure is due to duplicate key (race condition / retry)
+                bool isDuplicate = result.Errors.Any(e =>
+                    e.Code == "DuplicateUserName" || e.Code == "DuplicateEmail");
+                if (isDuplicate)
+                {
+                    ModelState.AddModelError("Email", "the Email is already taken");
+                    return BadRequest(ModelState);
+                }
+
+                return BadRequest(result.Errors.FirstOrDefault());
             }
-            else
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException dbEx)
+                when (dbEx.InnerException?.Message.Contains("23505") == true ||
+                      dbEx.InnerException?.Message.Contains("duplicate key") == true)
             {
+                // Postgres unique constraint violation - email already exists
                 ModelState.AddModelError("Email", "the Email is already taken");
                 return BadRequest(ModelState);
-            }
             }
             catch (Exception ex)
             {
