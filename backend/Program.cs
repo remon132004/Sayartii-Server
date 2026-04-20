@@ -63,48 +63,35 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Auto Migrate the database with retry logic
-using (var scope = app.Services.CreateScope())
+// Warm up DB connection in background AFTER app starts (non-blocking)
+_ = Task.Run(async () =>
 {
-    var services = scope.ServiceProvider;
-    var logger = services.GetRequiredService<ILogger<Program>>();
-    var db = services.GetRequiredService<ApplicationDbContext>();
-    
+    await Task.Delay(3000); // wait for server to be fully up
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     int retries = 10;
     while (retries > 0)
     {
         try
         {
-            logger.LogInformation("Attempting to initialize database...");
-            if (!db.Database.CanConnect())
-            {
-                Console.WriteLine("Cannot connect to database.");
-            }
-            
-            // Ensure tables are created (even if DB exists)
+            logger.LogInformation("Warming up DB connection...");
+            // Simple ping query to pre-warm the connection pool
+            await db.Database.ExecuteSqlRawAsync("SELECT 1");
+            // Ensure tables exist
             var databaseCreator = db.Database.GetService<IRelationalDatabaseCreator>();
-            try {
-                databaseCreator.CreateTables();
-            } catch (Exception) {
-                // Tables might already exist, ignore
-            }
-            
-            Console.WriteLine("Database initialization finished.");
+            try { databaseCreator.CreateTables(); } catch { /* already exist */ }
+            logger.LogInformation("DB warm-up complete.");
             break;
         }
         catch (Exception ex)
         {
             retries--;
-            logger.LogWarning($"Database not ready yet. Retrying in 5 seconds... ({retries} attempts left)");
-            System.Threading.Thread.Sleep(5000);
-            if (retries == 0)
-            {
-                logger.LogError(ex, "Failed to initialize database after multiple attempts.");
-                throw;
-            }
+            logger.LogWarning($"DB warm-up failed, retrying... ({retries} left): {ex.Message}");
+            await Task.Delay(5000);
         }
     }
-}
+});
 
 if (app.Environment.IsDevelopment())
 {
