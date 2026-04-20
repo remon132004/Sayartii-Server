@@ -12,11 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add Database Context using PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions => sqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 5,
-            maxRetryDelay: TimeSpan.FromSeconds(30),
-            errorCodesToAdd: null)));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add Identity with relaxed password rules
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
