@@ -50,6 +50,7 @@ namespace Sayartii.Api.Controllers
                 user.Name = userDto.Name;
                 user.UserName = userDto.Email;
                 user.Email = userDto.Email;
+                user.RegisterDate = DateTime.UtcNow;
 
                 IdentityResult result = await usermanger.CreateAsync(user, userDto.Password);
                 if (result.Succeeded)
