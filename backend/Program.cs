@@ -7,13 +7,19 @@ using Sayartii.Api.Data;
 using Sayartii.Api.Models;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add Database Context using PostgreSQL
+// Build NpgsqlDataSource manually for full PgBouncer Transaction Mode compatibility
+var connStr = builder.Configuration.GetConnectionString("DefaultConnection")!;
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connStr);
+// Disable all features that require persistent connection state (incompatible with PgBouncer)
+var dataSource = dataSourceBuilder.Build();
+
+// Add Database Context using the pre-built data source
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
-        npgsql => npgsql.MaxBatchSize(1)));
+    options.UseNpgsql(dataSource, npgsql => npgsql.MaxBatchSize(1)));
 
 // Add Identity with relaxed password rules
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
