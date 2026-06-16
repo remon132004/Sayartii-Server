@@ -7,12 +7,14 @@ using Sayartii.Api.Data;
 using Sayartii.Api.Models;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Build Database Context using SQLite for Demo Readiness
-var connStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=sayartii.db";
+// Build Database Context using SQLite (works locally + on Hugging Face Docker)
+// The ENV var SQLITE_CONNECTION overrides appsettings for cloud deployment
+var connStr = Environment.GetEnvironmentVariable("SQLITE_CONNECTION")
+              ?? builder.Configuration.GetConnectionString("DefaultConnection")
+              ?? "Data Source=sayartii.db";
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connStr));
 
