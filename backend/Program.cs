@@ -11,15 +11,10 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Build NpgsqlDataSource manually for full PgBouncer Transaction Mode compatibility
-var connStr = builder.Configuration.GetConnectionString("DefaultConnection")!;
-var dataSourceBuilder = new NpgsqlDataSourceBuilder(connStr);
-// Disable all features that require persistent connection state (incompatible with PgBouncer)
-var dataSource = dataSourceBuilder.Build();
-
-// Add Database Context using the pre-built data source
+// Build Database Context using SQLite for Demo Readiness
+var connStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=sayartii.db";
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(dataSource, npgsql => npgsql.MaxBatchSize(1)));
+    options.UseSqlite(connStr));
 
 // Add Identity with relaxed password rules
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>

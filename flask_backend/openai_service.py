@@ -20,7 +20,15 @@ def generate_dtc_description(dtc_code: str) -> dict:
     """
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        return {"error": "OpenAI API Key not found. Please set OPENAI_API_KEY in .env file."}
+        print(f"Warning: OPENAI_API_KEY not found. Returning mock response for {dtc_code}.")
+        return {
+            "dtc_code": dtc_code,
+            "critical_level": "High",
+            "description": DTC_DESCRIPTIONS.get(dtc_code, "Unknown Error Code"),
+            "long_description": "This is a mock diagnostic description generated because the OpenAI API Key is missing. The vehicle has reported a fault code that requires inspection.",
+            "reason": ["Sensor malfunction", "Wiring issue", "Missing OpenAI Key"],
+            "repair": ["Inspect sensor", "Check wiring connections", "Add OPENAI_API_KEY to environment"]
+        }
         
     client = openai.OpenAI(api_key=api_key)
 
