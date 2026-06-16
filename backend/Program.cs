@@ -10,11 +10,10 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Build Database Context using SQLite (works locally + on Hugging Face Docker)
-// The ENV var SQLITE_CONNECTION overrides appsettings for cloud deployment
-var connStr = Environment.GetEnvironmentVariable("SQLITE_CONNECTION")
-              ?? builder.Configuration.GetConnectionString("DefaultConnection")
-              ?? "Data Source=sayartii.db";
+// FORCE SQLite — Hardcoded to bypass any HF environment variable
+// that previously overrode appsettings.json with the old Postgres string.
+// This guarantees demo readiness regardless of cloud environment.
+const string connStr = "Data Source=sayartii.db";
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connStr));
 
