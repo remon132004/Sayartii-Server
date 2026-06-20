@@ -26,6 +26,7 @@ def generate_dtc_description(dtc_code: str) -> dict:
             "critical_level": "High",
             "description": DTC_DESCRIPTIONS.get(dtc_code, "Unknown Error Code"),
             "long_description": "This is a mock diagnostic description generated because the OpenAI API Key is missing. The vehicle has reported a fault code that requires inspection.",
+            "driving_advice": "Do not drive until inspected.",
             "reason": ["Sensor malfunction", "Wiring issue", "Missing OpenAI Key"],
             "repair": ["Inspect sensor", "Check wiring connections", "Add OPENAI_API_KEY to environment"]
         }
@@ -45,6 +46,7 @@ Please provide a detailed report structured EXACTLY as a valid JSON object with 
     "critical_level": "High/Medium/Low",
     "description": "Short description of the trouble code in professional Arabic",
     "long_description": "Detailed explanation of the problem meaning in professional Arabic",
+    "driving_advice": "Clear, professional advice on whether the driver should stop immediately, drive to the nearest mechanic, or if it can wait. Must be in Arabic.",
     "reason": ["Reason 1 in Arabic", "Reason 2 in Arabic"],
     "repair": ["Treatment step 1 in Arabic", "Treatment step 2 in Arabic"]
 }}
