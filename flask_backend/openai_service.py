@@ -36,14 +36,17 @@ def generate_dtc_description(dtc_code: str) -> dict:
 You are an expert automotive mechanic diagnostic system. 
 A vehicle has reported the following Diagnostic Trouble Code (DTC): {dtc_code}.
 
+IMPORTANT: You MUST respond entirely in Arabic. 
+Do NOT use literal or direct translations. You MUST use the common professional automotive terminology used by mechanics and car experts in the Arab world (e.g., using terms like "بوابة الهواء", "حساس الشكمان", "ثلاجة المحرك", "موبينة", "بوجيهات", etc., where applicable).
+
 Please provide a detailed report structured EXACTLY as a valid JSON object with the following keys. Do NOT include Markdown formatting like ```json. Just raw JSON.
 {{
     "dtc_code": "{dtc_code}",
     "critical_level": "High/Medium/Low",
-    "description": "Short description of the trouble code",
-    "long_description": "Detailed explanation of the problem meaning",
-    "reason": ["Reason 1", "Reason 2"],
-    "repair": ["Treatment step 1", "Treatment step 2"]
+    "description": "Short description of the trouble code in professional Arabic",
+    "long_description": "Detailed explanation of the problem meaning in professional Arabic",
+    "reason": ["Reason 1 in Arabic", "Reason 2 in Arabic"],
+    "repair": ["Treatment step 1 in Arabic", "Treatment step 2 in Arabic"]
 }}
     """
 
