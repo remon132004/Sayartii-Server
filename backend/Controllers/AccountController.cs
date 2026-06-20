@@ -53,6 +53,7 @@ namespace Sayartii.Api.Controllers
                 ApplicationUser user = new ApplicationUser
                 {
                     Name = userDto.Name,
+                    CarName = userDto.CarName,
                     UserName = userDto.Email,
                     NormalizedUserName = userDto.Email.ToUpper(),
                     Email = userDto.Email,
@@ -138,7 +139,9 @@ namespace Sayartii.Api.Controllers
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(mytoken),
-                    expiration = mytoken.ValidTo
+                    expiration = mytoken.ValidTo,
+                    name = user.Name,
+                    carName = user.CarName
                 });
             }
             catch (Exception ex)

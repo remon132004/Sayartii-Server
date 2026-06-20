@@ -77,6 +77,8 @@ _ = Task.Run(async () =>
             // Ensure tables exist
             var databaseCreator = db.Database.GetService<IRelationalDatabaseCreator>();
             try { databaseCreator.CreateTables(); } catch { /* already exist */ }
+            // Ensure CarName column exists in AspNetUsers
+            try { await db.Database.ExecuteSqlRawAsync("ALTER TABLE AspNetUsers ADD COLUMN CarName TEXT DEFAULT '';"); } catch { /* column already exists */ }
             logger.LogInformation("DB warm-up complete.");
             break;
         }

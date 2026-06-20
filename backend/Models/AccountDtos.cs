@@ -6,6 +6,8 @@ namespace Sayartii.Api.Models
         public string Password { get; set; } = string.Empty;
         public string ConfirmPassword { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+        public string CarName { get; set; } = string.Empty;
+        public string CarYear { get; set; } = string.Empty;
     }
 
     public class LoginUserDto
