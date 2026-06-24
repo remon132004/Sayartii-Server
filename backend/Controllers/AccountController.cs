@@ -39,10 +39,12 @@ namespace Sayartii.Api.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
+                string trimmedEmail = userDto.Email?.Trim() ?? string.Empty;
+
                 // Query directly via EF (no UserManager) to avoid Identity's internal multi-query pattern
                 var existingUser = await db.Users
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(u => u.NormalizedEmail == userDto.Email.ToUpper());
+                    .FirstOrDefaultAsync(u => u.NormalizedEmail == trimmedEmail.ToUpper());
 
                 if (existingUser != null)
                 {
@@ -54,10 +56,10 @@ namespace Sayartii.Api.Controllers
                 {
                     Name = userDto.Name,
                     CarName = userDto.CarName,
-                    UserName = userDto.Email,
-                    NormalizedUserName = userDto.Email.ToUpper(),
-                    Email = userDto.Email,
-                    NormalizedEmail = userDto.Email.ToUpper(),
+                    UserName = trimmedEmail,
+                    NormalizedUserName = trimmedEmail.ToUpper(),
+                    Email = trimmedEmail,
+                    NormalizedEmail = trimmedEmail.ToUpper(),
                     RegisterDate = DateTime.UtcNow,
                     EmailConfirmed = false,
                     PhoneNumberConfirmed = false,
@@ -99,10 +101,12 @@ namespace Sayartii.Api.Controllers
 
             try
             {
+                string trimmedEmail = userDto.Email?.Trim() ?? string.Empty;
+
                 // Direct EF query instead of UserManager.FindByNameAsync (avoids multi-query chain)
                 var user = await db.Users
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(u => u.NormalizedEmail == userDto.Email.ToUpper());
+                    .FirstOrDefaultAsync(u => u.NormalizedEmail == trimmedEmail.ToUpper());
 
                 if (user == null)
                     return Unauthorized();
@@ -112,7 +116,25 @@ namespace Sayartii.Api.Controllers
                 var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash!, userDto.Password);
 
                 if (result == PasswordVerificationResult.Failed)
-                    return Unauthorized();
+                {
+                    // Fallback to SHA-256 base64 check for legacy accounts
+                    string legacyHash = ComputeSha256Hash(userDto.Password);
+                    if (user.PasswordHash == legacyHash)
+                    {
+                        // Password is correct! Upgrade user's password hash in the database to new Identity standard format
+                        var newUserInstance = await db.Users.FindAsync(user.Id);
+                        if (newUserInstance != null)
+                        {
+                            newUserInstance.PasswordHash = passwordHasher.HashPassword(newUserInstance, userDto.Password);
+                            db.Users.Update(newUserInstance);
+                            await db.SaveChangesAsync();
+                        }
+                    }
+                    else
+                    {
+                        return Unauthorized();
+                    }
+                }
 
                 DateTime expiresornot = userDto.RememberMe ? DateTime.UtcNow.AddMonths(10) : DateTime.UtcNow.AddMonths(1);
 
@@ -147,6 +169,15 @@ namespace Sayartii.Api.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = ex.Message, inner = ex.InnerException?.Message, stackTrace = ex.StackTrace });
+            }
+        }
+
+        private static string ComputeSha256Hash(string password)
+        {
+            using (var sha256 = System.Security.Cryptography.SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(bytes);
             }
         }
     }
