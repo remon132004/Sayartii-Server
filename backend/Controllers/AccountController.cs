@@ -180,5 +180,25 @@ namespace Sayartii.Api.Controllers
                 return Convert.ToBase64String(bytes);
             }
         }
+
+        // GET /api/account/profile  —  Returns the logged-in user's profile data
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null) return Unauthorized();
+
+            var user = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) return NotFound();
+
+            return Ok(new
+            {
+                name    = user.Name,
+                email   = user.Email,
+                carName = user.CarName,
+                registerDate = user.RegisterDate
+            });
+        }
     }
 }

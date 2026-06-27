@@ -45,13 +45,49 @@ def train_pipeline(data_path: str):
     # Fill DTC Codes explicitly
     df['dtc_code'] = df['TROUBLE_CODES'].fillna('None')
 
-    # Since the Korean dataset doesn't have an "Estimated Hours" label explicitly documented,
-    # we simulate the estimated hours for vehicles breaking down to satisfy the Model 3 training label.
-    # In a real environment, this is collected via ground-truth survival analysis data.
+    # ── Estimated Hours: rule-based heuristic (not random) ────────────────────
+    # Instead of pure random values, we apply physics-inspired rules so the
+    # regression model learns *meaningful* patterns from OBD sensor readings.
+    #
+    # Lower hours = more urgent / imminent failure:
+    #   - Very high coolant temp         → overheating → urgent
+    #   - High engine load at low RPM    → engine stress → soon
+    #   - Multiple DTCs on same record   → advanced failure → soon
+    #   - Moderate issues                → can wait longer
+    #
+    # This is a reasonable proxy until ground-truth survival data is available.
     np.random.seed(42)
-    df['estimated_hours'] = np.where(df['status'] == 1, 
-                                     np.random.uniform(0.5, 48.0, size=len(df)), 
-                                     0.0)
+
+    def estimate_hours(row):
+        if row['status'] == 0:
+            return 0.0
+        coolant  = row.get('engine_coolant_temp', 80)
+        load     = row.get('engine_load', 30)
+        rpm      = row.get('engine_rpm', 800)
+        n_codes  = len(str(row.get('dtc_code', '')).split(','))
+
+        score = 0.0
+
+        # Coolant temperature scoring (high = urgent)
+        if coolant > 115:    score += 40  # Critical overheat
+        elif coolant > 105:  score += 25
+        elif coolant > 95:   score += 10
+
+        # Engine stress: high load at low RPM
+        if rpm < 500 and load > 70:  score += 30
+        elif load > 85:              score += 15
+        elif load > 70:              score += 8
+
+        # Multiple codes = further along failure path
+        if n_codes >= 3:    score += 20
+        elif n_codes == 2:  score += 10
+
+        # Convert score (0–90) to remaining hours (0.5–168h)
+        # Higher score → fewer hours remaining
+        hours = max(0.5, 48.0 - (score * 0.5)) + np.random.uniform(-2, 2)
+        return round(max(0.5, min(168.0, hours)), 2)
+
+    df['estimated_hours'] = df.apply(estimate_hours, axis=1)
 
     # 1. Preprocessing (Interpolation)
     feature_cols = ['engine_power', 'engine_coolant_temp', 'engine_load', 'engine_rpm', 

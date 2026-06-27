@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sayartii.Api.Data;
@@ -21,25 +22,26 @@ namespace Sayartii.Api.Controllers
 
         [Authorize]
         [HttpPost("Notifications")]
-        public IActionResult Notifications([FromBody] NotificationsDto noti)
+        public async Task<IActionResult> Notifications([FromBody] NotificationsDto noti)
         {
             if (noti == null)
             {
                 return BadRequest("null data");
             }
-            else
+
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) return Unauthorized();
+
+            Notifications notifications = new Notifications
             {
-                Notifications notifications = new Notifications();
-                Claim userid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                User_id      = userIdClaim.Value,
+                Notification = noti.Notification
+            };
 
-                notifications.User_id = userid.Value;
-                notifications.Notification = noti.Notification;
+            db.Notifications.Add(notifications);
+            await db.SaveChangesAsync();
 
-                db.Notifications.Add(notifications);
-                db.SaveChanges();
-
-                return Ok();
-            }
+            return Ok();
         }
     }
 }

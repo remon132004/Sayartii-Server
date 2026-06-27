@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sayartii.Api.Data;
@@ -21,38 +22,39 @@ namespace Sayartii.Api.Controllers
 
         [Authorize]
         [HttpPost("CarData")]
-        public IActionResult CarData([FromBody] DataFromCarDto datadto)
+        public async Task<IActionResult> CarData([FromBody] DataFromCarDto datadto)
         {
             if (datadto == null)
             {
                 return BadRequest("null data");
             }
-            else
+
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) return Unauthorized();
+
+            DataFromCar data = new DataFromCar
             {
-                Claim userid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                User_id         = userIdClaim.Value,
+                CarYear          = datadto.CarYear,
+                EnginePower      = datadto.EnginePower,
+                EngineCoolantTemp = datadto.EngineCoolantTemp,
+                EngineLoad       = datadto.EngineLoad,
+                EngineRPM        = datadto.EngineRPM,
+                AirIntakeTemp    = datadto.AirIntakeTemp,
+                Speed            = datadto.Speed,
+                ShortTermFuelBank1 = datadto.ShortTermFuelBank1,
+                throttlePosition = datadto.throttlePosition,
+                TimingAdvance    = datadto.TimingAdvance,
+                TroubleCode      = datadto.TroubleCode,
+                Description      = datadto.Description,
+                Date             = datadto.Date
+            };
 
-                DataFromCar data = new DataFromCar();
+            db.DataFromCar.Add(data);
+            await db.SaveChangesAsync();
 
-                data.User_id = userid.Value;
-                data.CarYear = datadto.CarYear;
-                data.EnginePower = datadto.EnginePower;
-                data.EngineCoolantTemp = datadto.EngineCoolantTemp;
-                data.EngineLoad = datadto.EngineLoad;
-                data.EngineRPM = datadto.EngineRPM;
-                data.AirIntakeTemp = datadto.AirIntakeTemp;
-                data.Speed = datadto.Speed;
-                data.ShortTermFuelBank1 = datadto.ShortTermFuelBank1;
-                data.throttlePosition = datadto.throttlePosition;
-                data.TimingAdvance = datadto.TimingAdvance;
-                data.TroubleCode = datadto.TroubleCode;
-                data.Description = datadto.Description;
-                data.Date = datadto.Date;
-
-                db.DataFromCar.Add(data);
-                db.SaveChanges();
-
-                return Ok();
-            }
+            return Ok();
         }
     }
 }
+
