@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Sayartii.Api.Data;
 using Sayartii.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Sayartii.Api.Controllers
 {
